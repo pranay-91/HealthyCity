@@ -4,10 +4,11 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css"
     <title>GetUserProfile</title>
 </head>
 <body>
-    <div>
+    <div class="container">
         <h4>User Profile for Fitbit</h4> 
         <hr />
 
@@ -29,8 +30,8 @@
             <dt>
                 @Html.DisplayNameFor(model => model.Avatar150)
             </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Avatar150)
+            <dd>    
+                <img src="@Url.Content(Model.Avatar150)" alt="avatar-image"/>
             </dd>
 
             <dt>
