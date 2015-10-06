@@ -4,11 +4,19 @@ using System.Web.Mvc;
 using Fitbit.Api.Portable;
 using System.Threading.Tasks;
 using Fitbit.Models;
+using MongoDB.Driver;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using System.Configuration;
+using System.Threading.Tasks;
 
 namespace Healthycity.Controllers
 {
     public class FitbitController : Controller
     {
+        private static IMongoClient _client;
+        private static IMongoDatabase _database;
+
         // GET: Fitbit
         public ActionResult Index()
         {
@@ -32,6 +40,11 @@ namespace Healthycity.Controllers
 
         public async Task<ActionResult> Callback()
         {
+            _client = new MongoClient();
+            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+
+            var collection = _database.GetCollection<OAuth2AccessToken>("OAuth2AccessToken");
+
             string ConsumerKey = ConfigurationManager.AppSettings["FitbitConsumerKey"];
             string ConsumerSecret = ConfigurationManager.AppSettings["FitbitConsumerSecret"];
             string ClientId = ConfigurationManager.AppSettings["FitbitClientId"];
@@ -41,6 +54,8 @@ namespace Healthycity.Controllers
             string code = Request.Params["code"];
             OAuth2AccessToken accessToken = await authenticator.ExchangeAuthCodeForAccessTokenAsync(code);
 
+            await collection.InsertOneAsync(accessToken);
+
             Session["AccessToken"] = accessToken;
             System.Diagnostics.Debug.WriteLine("Access Token is: {0} and Expires in: {1} ", accessToken.Token, accessToken.ExpiresIn);
             return RedirectToAction("Index", "Home");
@@ -48,10 +63,17 @@ namespace Healthycity.Controllers
 
         public async Task<ActionResult> GetUserProfile()
         {
+            _client = new MongoClient();
+            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+
+            var collection = _database.GetCollection<UserProfile>("UserProfile");
+
             OAuth2AccessToken accessToken = (OAuth2AccessToken)Session["AccessToken"];
 
             FitbitClient client = GetFitbitClient(accessToken.Token, accessToken.RefreshToken);
             FitbitResponse<UserProfile> response = await client.GetUserProfileAsync();
+
+            await collection.InsertOneAsync(response.Data);
 
             return View(response.Data);
         }
@@ -74,5 +96,8 @@ namespace Healthycity.Controllers
             return View(response.Data);
 
         }
+
+
+
     }
 }

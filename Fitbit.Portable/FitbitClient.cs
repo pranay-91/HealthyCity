@@ -840,5 +840,37 @@ namespace Fitbit.Api.Portable
 
             return new FitbitResponse<T>(response.StatusCode, response.Headers, errors);
         }
+
+        public async Task<FitbitResponse<ActivitySummary>> GetActivityTCX(string logid, string encodedUserId = null)
+        {
+            string apiCall = FitbitClientHelperExtensions.ToFullUrl("/1/user/{0}/activities/{1}.tcx", encodedUserId, logid);
+
+            Authorization.SetAuthorizationHeader(this.HttpClient);
+
+            HttpResponseMessage response = await HttpClient.GetAsync(apiCall);
+            var fitbitResponse = await HandleResponse<ActivitySummary>(response);
+            if (fitbitResponse.Success)
+            {
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var serializer = new JsonDotNetSerializer { RootProperty = "summary" };
+                fitbitResponse.Data = serializer.Deserialize<ActivitySummary>(responseBody);
+            }
+            return fitbitResponse;
+
+            /*
+            
+            Authorization.SetAuthorizationHeader(this.HttpClient);
+
+            HttpResponseMessage response = await HttpClient.GetAsync(apiCall);
+            var fitbitResponse = await HandleResponse<UserProfile>(response);
+            if (fitbitResponse.Success)
+            {
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var serializer = new JsonDotNetSerializer { RootProperty = "user" };
+                fitbitResponse.Data = serializer.Deserialize<UserProfile>(responseBody);    
+            }
+            return fitbitResponse;
+            */
+        }
     }
 }
