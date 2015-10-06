@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Healthycity", "Healthycity\Healthycity.csproj", "{D8ACA610-6709-43C8-B295-1BA7E256EEE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fitbit.Common", "Fitbit.Common\Fitbit.Common.csproj", "{37636456-5640-4258-ADF5-11292E6B422E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fitbit.Portable", "Fitbit.Portable\Fitbit.Portable.csproj", "{1358D3B4-0698-4003-97EB-B6D489E04138}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D8ACA610-6709-43C8-B295-1BA7E256EEE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8ACA610-6709-43C8-B295-1BA7E256EEE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8ACA610-6709-43C8-B295-1BA7E256EEE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8ACA610-6709-43C8-B295-1BA7E256EEE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37636456-5640-4258-ADF5-11292E6B422E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37636456-5640-4258-ADF5-11292E6B422E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37636456-5640-4258-ADF5-11292E6B422E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37636456-5640-4258-ADF5-11292E6B422E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1358D3B4-0698-4003-97EB-B6D489E04138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1358D3B4-0698-4003-97EB-B6D489E04138}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1358D3B4-0698-4003-97EB-B6D489E04138}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1358D3B4-0698-4003-97EB-B6D489E04138}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
