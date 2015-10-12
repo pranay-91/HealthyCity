@@ -7,8 +7,6 @@ using Fitbit.Models;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
-using System.Configuration;
-using System.Threading.Tasks;
 
 namespace Healthycity.Controllers
 {
