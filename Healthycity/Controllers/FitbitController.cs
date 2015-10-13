@@ -7,6 +7,7 @@ using Fitbit.Models;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using Healthycity.Models;
 
 namespace Healthycity.Controllers
 {
@@ -64,11 +65,16 @@ namespace Healthycity.Controllers
             _client = new MongoClient();
             _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
 
+            var OAuth2AccessTokenCollection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
             var collection = _database.GetCollection<UserProfile>("UserProfile");
 
-            OAuth2AccessToken accessToken = (OAuth2AccessToken)Session["AccessToken"];
+            var AccessTokenDocument = await OAuth2AccessTokenCollection.Find(new BsonDocument()).FirstOrDefaultAsync();
 
-            FitbitClient client = GetFitbitClient(accessToken.Token, accessToken.RefreshToken);
+           // OAuth2AccessToken accessToken = (OAuth2AccessToken)AccessTokenDocument;
+
+            //FitbitClient client = GetFitbitClient(Acc.Token, accessToken.RefreshToken);
+
+            FitbitClient client = GetFitbitClient(AccessTokenDocument.Token, AccessTokenDocument.RefreshToken);
             FitbitResponse<UserProfile> response = await client.GetUserProfileAsync();
 
             await collection.InsertOneAsync(response.Data);

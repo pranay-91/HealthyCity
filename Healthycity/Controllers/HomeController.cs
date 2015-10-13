@@ -72,7 +72,6 @@ namespace Healthycity.Controllers
                 ViewBag.responseMessage = stringWriter.GetStringBuilder().ToString();
             }
 
-                
             return View();
             
         }
