@@ -841,24 +841,44 @@ namespace Fitbit.Api.Portable
             return new FitbitResponse<T>(response.StatusCode, response.Headers, errors);
         }
 
-        public async Task<string> GetActivityTCX(string logid, string encodedUserId = null)
+        public async Task<HttpResponseMessage> GetActivityTCX(string logid, string encodedUserId = null)
         {
             string apiCall = FitbitClientHelperExtensions.ToFullUrl("/1/user/{0}/activities/{1}.tcx", encodedUserId, logid);
 
             Authorization.SetAuthorizationHeader(this.HttpClient);
 
             HttpResponseMessage response = await HttpClient.GetAsync(apiCall);
-            string responseBody = "";
 
-            if (response.IsSuccessStatusCode) {
-                responseBody = await response.Content.ReadAsStringAsync();
-                //TODO: now we have the response message as a string. we need to parse it into an XML document.
-            }
-            else {
-                responseBody = "error";
-            }
+            string responseString = await response.Content.ReadAsStringAsync();
 
-            return responseBody;
+
+
+
+        
+           // HttpResponseMessage response = await HttpClient.GetAsync(apiCall);
+
+            //HttpResponseMessage file = new HttpResponseMessage();
+            //using (HttpClient httpClient = new HttpClient())
+            //{
+            //    httpClient.BaseAddress = new Uri("http://shmuma.ru");
+            //    Task<HttpResponseMessage> response = httpClient.GetAsync(url);
+            //    file = response.Result;
+            //}
+
+
+
+
+            //if (response.IsSuccessStatusCode) {
+            //    responseBody = await response.Content.ReadAsStringAsync();
+            //    //TODO: now we have the response message as a string. we need to parse it into an XML document.
+            //}
+            //else {
+            //    responseBody = "error";
+            //}
+
+            return response;
+
+
             /*
             
             Authorization.SetAuthorizationHeader(this.HttpClient);

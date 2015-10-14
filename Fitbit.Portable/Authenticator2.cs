@@ -36,7 +36,7 @@ namespace Fitbit.Api.Portable
             url += "response_type=code";
             url += string.Format("&client_id={0}", this.ClientId);
             url += string.Format("&redirect_uri={0}", Uri.EscapeDataString(this.RedirectUri));
-            url += string.Format("&scope={0}", String.Join(" ", scopeTypes));
+            url += string.Format("&scope={0}", String.Join("%20", scopeTypes));
 
             if(!string.IsNullOrWhiteSpace(state))
                 url += string.Format("&state={0}", state);

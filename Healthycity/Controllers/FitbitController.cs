@@ -8,6 +8,7 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using Healthycity.Models;
+using System.Net.Http;
 
 namespace Healthycity.Controllers
 {
@@ -31,7 +32,7 @@ namespace Healthycity.Controllers
             Authenticator2 authenticator = new Authenticator2(ClientId, ConsumerSecret, Request.Url.GetLeftPart(UriPartial.Authority) + "/Fitbit/Callback");
 
             
-            string[] scopes = new string[] { "profile" };
+            string[] scopes = new string[] { "profile", "activity", "heartrate", "location" };
             string authUrl = authenticator.GenerateAuthUrl(scopes, null);
 
             return Redirect(authUrl);        
@@ -103,5 +104,20 @@ namespace Healthycity.Controllers
 
 
 
+        public async Task<FileResult> GetTCX() {
+
+
+            _client = new MongoClient();
+            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+
+            var OAuth2AccessTokenCollection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
+
+            var AccessTokenDocument = await OAuth2AccessTokenCollection.Find(new BsonDocument()).FirstOrDefaultAsync();
+
+            FitbitClient client = GetFitbitClient(AccessTokenDocument.Token, AccessTokenDocument.RefreshToken);
+
+            HttpResponseMessage response = await client.GetActivityTCX("366076610");
+            return File(response.Content.ReadAsByteArrayAsync().Result, "application/vnd.garmin.tcx+xml", "sample.tcx");
+        }
     }
 }
