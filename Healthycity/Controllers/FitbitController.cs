@@ -32,7 +32,9 @@ namespace Healthycity.Controllers
             Authenticator2 authenticator = new Authenticator2(ClientId, ConsumerSecret, Request.Url.GetLeftPart(UriPartial.Authority) + "/Fitbit/Callback");
 
             
+
             string[] scopes = new string[] { "profile", "activity", "heartrate", "location" };
+
             string authUrl = authenticator.GenerateAuthUrl(scopes, null);
 
             return Redirect(authUrl);        
@@ -58,7 +60,7 @@ namespace Healthycity.Controllers
 
             Session["AccessToken"] = accessToken;
             System.Diagnostics.Debug.WriteLine("Access Token is: {0} and Expires in: {1} ", accessToken.Token, accessToken.ExpiresIn);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home");   
         }
 
         public async Task<ActionResult> GetUserProfile()
@@ -102,6 +104,21 @@ namespace Healthycity.Controllers
 
         }
 
+        public async Task<ActionResult> getActivityList()
+        {
+            DateTime activity_date = new DateTime(2015, 10, 14);
+            _client = new MongoClient();
+            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            var OAuth2AccessTokenCollection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
+
+            var AccessTokenDocument = await OAuth2AccessTokenCollection.Find(new BsonDocument()).FirstOrDefaultAsync();
+
+            FitbitClient client = GetFitbitClient(AccessTokenDocument.Token, AccessTokenDocument.RefreshToken);
+            FitbitResponse<ActivityLogList> response = await client.GetActivityListAsync(activity_date);
+
+            return View(response.Data.DataSet);
+        }
+        
 
 
         public async Task<FileResult> GetTCX() {

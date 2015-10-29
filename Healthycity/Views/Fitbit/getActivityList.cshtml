@@ -1,0 +1,142 @@
+﻿ @model IEnumerable<Fitbit.Models.Activities>
+
+    @{
+        Layout = null;
+    }
+
+    <!DOCTYPE html>
+
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+        <title>getActivityList</title>
+    </head>
+    <body>
+        <div class="container">
+            <h4>ActivitesList</h4>
+            <hr />
+            @foreach (var item in Model)
+            {
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.ActivityId)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.ActivityId)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.ActivityParentId)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.ActivityParentId)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.ActivityParentName)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.ActivityParentName)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Calories)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Calories)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Description)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Description)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Distance)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Distance)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Duration)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Duration)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.HasStartTime)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.HasStartTime)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.IsFavorite)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.IsFavorite)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.LastModified)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.LastModified)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.LogId)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.LogId)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Name)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.StartTime)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.StartTime)
+                    </dd>
+
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Steps)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Steps)
+                    </dd>
+
+                </dl>
+            }
+        </div>
+        <p>
+            @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+            @Html.ActionLink("Back to List", "Index")
+        </p>
+    </body>
+</html>

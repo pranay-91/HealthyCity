@@ -141,6 +141,7 @@
     </Compile>
     <Compile Include="Models\AccessToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\ActivityList.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
@@ -151,6 +152,10 @@
     <Content Include="Scripts\jquery-1.9.1.min.map" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\GetXML.cshtml" />
+    <Content Include="Views\Fitbit\getActivityList.cshtml">
+      <BrowseToURL>~/Fitbit/getActivityList</BrowseToURL>
+    </Content>
+    <Content Include="Views\Fitbit\ActivityList.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

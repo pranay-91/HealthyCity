@@ -144,5 +144,26 @@ namespace Fitbit.Api.Portable
 
             return result;
         }
+
+        internal static ActivityLogList GetActivityList(this JsonDotNetSerializer serializer, string activityLogDataJson)
+        {
+
+            if (string.IsNullOrWhiteSpace(activityLogDataJson))
+            {
+                throw new ArgumentException("activityLogDataJson", "activityLogDataJson can not be empty, null or whitespace");
+            }
+
+            //var weightlogs = JToken.Parse(weightJson)["weight"];
+            //var weight = new Weight();
+            //weight.Weights = weightlogs.Children().Select(serializer.Deserialize<WeightLog>).ToList();
+            //return weight;
+
+            var activitiesList= JToken.Parse(activityLogDataJson)["activities"];
+            var activityLogList = new ActivityLogList();
+            activityLogList.DataSet = activitiesList.Children().Select(serializer.Deserialize<Activities>).ToList();
+
+            return activityLogList;
+        }
     }
 }
+

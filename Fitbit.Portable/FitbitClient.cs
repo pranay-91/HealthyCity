@@ -894,5 +894,32 @@ namespace Fitbit.Api.Portable
             return fitbitResponse;
             */
         }
+
+   
+        public async Task<FitbitResponse<ActivityLogList>> GetActivityListAsync(DateTime date)
+        {
+
+            //string apiCall = FitbitClientHelperExtensions.ToFullUrl("/1/user/-/activities/list.json?offset=2&limit=2&ort=desc&beforeDate={1}.json", args: date.ToFitbitFormat());
+
+            //string apiCall = FitbitClientHelperExtensions.ToFullUrl("/1/user/-/activities/date/{1}.json", args: date.ToFitbitFormat());
+
+            string apiCall = FitbitClientHelperExtensions.ToFullUrl("/1/user/-/activities/date/{1}.json", args: date.ToFitbitFormat());
+            Authorization.SetAuthorizationHeader(this.HttpClient);
+
+            HttpResponseMessage response = await HttpClient.GetAsync(apiCall);
+            var fitbitResponse = await HandleResponse<ActivityLogList>(response);
+            if (fitbitResponse.Success)
+            {
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                var serializer = new JsonDotNetSerializer { RootProperty = null };
+                fitbitResponse.Data = serializer.GetActivityList(responseBody);
+            }
+
+            return fitbitResponse;
+
+
+          
+        }
     }
 }
