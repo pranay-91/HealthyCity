@@ -8,10 +8,15 @@ namespace Healthycity.DAL
 {
     public class MongoDataModel
     {
-        public IMongoClient _client { get; set; }
-        public IMongoDatabase _database { get; set; }
+        IMongoClient _client { get; set; }
+        IMongoDatabase _database { get; set; }
         
-        public string _serverURL { get; set; }
-        public string _serverDefaultDatabase { get; set; }
+        string _serverURL { get; set; }
+        string _serverDefaultDatabase { get; set; }
+
+        MongoDataModel(string database, string url)
+        {
+
+        }
     }
 }
