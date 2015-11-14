@@ -5,17 +5,28 @@ using System.Web;
 
 namespace Healthycity.DAL
 {
-    public class FitBitDataService
+    public class FitBitDataService: IFitBitDataService
     {
         MongoDataModel _model { get; set; }
-        public FitBitUser GetFitBitUser()
-        {
 
+        FitBitDataService(MongoDataModel m)
+        {
+            _model = m;
         }
 
-        public void NewFitBitUser(FitBitUser new_user)
+        public FitBitUser GetFitBitUserByName(string name)
         {
+            var collection = _model._database.GetCollection<FitBitUser>("FitBitUser");
+        }
 
+        public async void NewFitBitUser(FitBitUser new_user)
+        {
+            var collection = _model._database.GetCollection<FitBitUser>("FitBitUser");
+
+            if (GetFitBitUserByName(new_user.user_name)== null)
+            {
+                await collection.InsertOneAsync(new_user);
+            }
         }
 
         public void RemoveFitBitUser(FitBitUser user)
