@@ -101,51 +101,66 @@ namespace Healthycity.Controllers
             //get the user name by using the access token being currently recieved
             FitbitClient client = GetFitbitClient(accessToken.Token, accessToken.RefreshToken);
             FitbitResponse<UserProfile> response = await client.GetUserProfileAsync();
-            
-            // Create a new user with the access token recieved and user name 
-            FitBitUser new_user = new FitBitUser();
-            new_user.user_name = response.Data.FullName;
-            new_user.access_token = accessToken.Token;
-            new_user.token_type = accessToken.TokenType;
-            new_user.expires_in = accessToken.ExpiresIn;
-            new_user.refresh_token = accessToken.RefreshToken;
 
+
+            FitBitUser new_user = await getNewUser(accessToken);
             //add the new user to the database
             await FitData.NewFitBitUser(new_user);
 
             Session["AccessToken"] = accessToken;
             System.Diagnostics.Debug.WriteLine("Access Token is: {0} and Expires in: {1} ", accessToken.Token, accessToken.ExpiresIn);
+         
             return RedirectToAction("Index", "Home");
         }
 
-        private async Task<AccessToken> RefreshToken(string refresh_token)
+        private async Task<FitBitUser> RefreshToken(string refresh_token, string user_name)
         {
+
+            MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            FitBitDataService FitData = new FitBitDataService(dm);
+
             string ConsumerKey = ConfigurationManager.AppSettings["FitbitConsumerKey"];
             string ConsumerSecret = ConfigurationManager.AppSettings["FitbitConsumerSecret"];
             string ClientId = ConfigurationManager.AppSettings["FitbitClientId"];
             Authenticator2 authenticator = new Authenticator2(ClientId, ConsumerSecret, Request.Url.GetLeftPart(UriPartial.Authority) + "/Fitbit/Callback");
 
-            _client = new MongoClient();
-            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
-
-            var collection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
-
             OAuth2AccessToken access_token = await authenticator.RefreshAccessTokenAsync(refresh_token);
             //TODO: update the database with the new token
 
-            AccessToken tokenData = new AccessToken();
-            tokenData.UserName = "test";
-            tokenData.Token = access_token.Token;
-            tokenData.TokenType = access_token.TokenType;
-            tokenData.ExpiresIn = access_token.ExpiresIn;
-            tokenData.RefreshToken = access_token.RefreshToken;
+            FitBitUser user = await getNewUser(access_token);
+            
+            //update the user token
+            await FitData.ModifyFitBitUser(user);
+            return user;
+        }
 
-            await collection.InsertOneAsync(tokenData);
+        private async Task<FitBitUser> getNewUser(OAuth2AccessToken token) {
 
-            Session["AccessToken"] = access_token;
-            System.Diagnostics.Debug.WriteLine("New Access Token is: {0} and Expires in: {1} ", access_token.Token, access_token.ExpiresIn);
-          
-            return tokenData;
+            //get the user name by using the access token being currently recieved
+            FitbitClient client = GetFitbitClient(token.Token, token.RefreshToken);
+            FitbitResponse<UserProfile> response = await client.GetUserProfileAsync();
+
+            // Create a new user with the access token recieved and user name 
+            FitBitUser user = new FitBitUser();
+            user.user_name = response.Data.FullName;
+            user.access_token = token.Token;
+            user.token_type = token.TokenType;
+            user.expires_in = token.ExpiresIn;
+            user.refresh_token = token.RefreshToken;
+
+            return user;
+        }
+
+
+        // Test method for updating a user information
+        private async Task<int> testModifyFitbitUser() {
+            MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            FitBitDataService FitData = new FitBitDataService(dm);
+            FitBitUser user = FitData.GetFitBitUserByName("Pronoy Pradhananga");
+            user.expires_in = 2000;
+
+            await FitData.ModifyFitBitUser(user);
+            return 1;
         }
 
         public async Task<ActionResult> GetUserProfile()
@@ -248,13 +263,11 @@ namespace Healthycity.Controllers
 
         public async Task<ActionResult> refreshDemo()
         {
-            _client = new MongoClient();
-            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            FitBitDataService FitData = new FitBitDataService(dm);
+            FitBitUser user = FitData.GetFitBitUserByName("Pronoy Pradhananga");
 
-            var OAuth2AccessTokenCollection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
-            var AccessTokenDocument = await OAuth2AccessTokenCollection.Find(new BsonDocument()).FirstOrDefaultAsync();
-
-            var accessToken = RefreshToken(AccessTokenDocument.RefreshToken);
+            var accessToken =  await RefreshToken(user.refresh_token, user.user_name);
             return View(accessToken);
         }
     }
