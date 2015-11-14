@@ -9,9 +9,9 @@ namespace Healthycity.DAL
     interface IFitBitDataService
     {
         FitBitUser GetFitBitUserByName(string name);
-        void NewFitBitUser(FitBitUser new_user);
-        void RemoveFitBitUserById(string id);
-        void ModifyFitBitUser(FitBitUser user);
+        Task<int> NewFitBitUser(FitBitUser new_user);
+        Task<int> RemoveFitBitUserById(string id);
+        Task<int> ModifyFitBitUser(FitBitUser user);
         IEnumerable<FitBitUser> GetAllFitBitUsers();
     }
 }

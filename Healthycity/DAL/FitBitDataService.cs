@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Healthycity.DAL
@@ -12,53 +13,57 @@ namespace Healthycity.DAL
     {
         MongoDataModel _model { get; set; }
 
-        FitBitDataService(MongoDataModel m)
+        public FitBitDataService(MongoDataModel m)
         {
             _model = m;
         }
 
         public  FitBitUser GetFitBitUserByName(string name)
         {
-            var collection = _model._database.GetCollection<FitBitUser>("FitBitUser");
+            var collection = _model.GetFitBitUserCollection();
 
             // Get user by matching the user name. Implement $match by Where method
             //TODO: What if multiple user with same user name?
-            var result =  collection.AsQueryable()
-                .Where(u => u.user_name == name);
+            var result = collection.AsQueryable()
+                .Where(u => u.user_name == name).SingleOrDefault<FitBitUser>();
+                
             
             //TODO: check if null
-            return (FitBitUser)result;
+            return result;
         }
 
-        public async void NewFitBitUser(FitBitUser new_user)
+        public async Task<int> NewFitBitUser(FitBitUser new_user)
         {
-            var collection = _model._database.GetCollection<FitBitUser>("FitBitUser");
+            var collection = _model.GetFitBitUserCollection();
             if (GetFitBitUserByName(new_user.user_name)== null)
             {
                 await collection.InsertOneAsync(new_user);
             }
+            return 1;
         }
         
-        public async void RemoveFitBitUserById(string id)
+        public async Task<int> RemoveFitBitUserById(string id)
         {
-            var collection = _model._database.GetCollection<FitBitUser>("FitBitUser");
+            var collection = _model.GetFitBitUserCollection();
 
             var filter = new BsonDocument("_id", id);
             var result = await collection.DeleteOneAsync(filter);
+            return 1;
         }
 
-        public async void ModifyFitBitUser(FitBitUser user)
+        public async Task<int> ModifyFitBitUser(FitBitUser user)
         {
-            var collection = _model._database.GetCollection<FitBitUser>("FitBitUser");
+            var collection = _model.GetFitBitUserCollection();
 
             var filter = new BsonDocument("_id", user._id);
             var result = await collection.FindOneAndReplaceAsync(filter, user);
 
             //TODO: handle excpetion case
+            return 1;
         }
 
         public IEnumerable<FitBitUser> GetAllFitBitUsers() {
-            var collection = _model._database.GetCollection<FitBitUser>("FitBitUser");
+            var collection = _model.GetFitBitUserCollection();
             var result = collection.AsQueryable();
             return result;
             //TODO: handle excpetion case

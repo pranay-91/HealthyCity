@@ -20,22 +20,22 @@ namespace Healthycity.Controllers
         // GET: Home
         public async Task<ActionResult> Index()
         {
-            var _client = new MongoClient();
-            var _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
-            var AccessTokenCollection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
-            var filter = new BsonDocument();
-            using (var cursor = await AccessTokenCollection.FindAsync(filter))
-            {
-                while (await cursor.MoveNextAsync())
-                {
-                    var batch = cursor.Current;
-                    foreach (var document in batch)
-                    {
-                        // process document
+            //var _client = new MongoClient();
+            //var _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            //var AccessTokenCollection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
+            //var filter = new BsonDocument();
+            //using (var cursor = await AccessTokenCollection.FindAsync(filter))
+            //{
+            //    while (await cursor.MoveNextAsync())
+            //    {
+            //        var batch = cursor.Current;
+            //        foreach (var document in batch)
+            //        {
+            //            // process document
                      
-                    }
-                }
-            }
+            //        }
+            //    }
+            //}
             return View();
         }
 

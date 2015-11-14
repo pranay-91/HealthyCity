@@ -14,9 +14,16 @@ namespace Healthycity.DAL
         string _serverURL { get; set; }
         string _serverDefaultDatabase { get; set; }
 
-        MongoDataModel(string database, string url)
+        public MongoDataModel(string database)
         {
-
+          _client = new MongoClient();
+          _database = _client.GetDatabase(database);
         }
+
+        public IMongoCollection<FitBitUser> GetFitBitUserCollection()
+        {
+            return _database.GetCollection<FitBitUser>("OAuth2AccessToken");
+        }
+
     }
 }

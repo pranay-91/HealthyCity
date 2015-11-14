@@ -9,6 +9,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using Healthycity.Models;
 using System.Net.Http;
+using Healthycity.DAL;
 
 namespace Healthycity.Controllers
 {
@@ -53,10 +54,38 @@ namespace Healthycity.Controllers
 
         public async Task<ActionResult> Callback()
         {
-            _client = new MongoClient();
-            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            //_client = new MongoClient();
+            //_database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
 
-            var collection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
+            //var collection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
+
+            //string ConsumerKey = ConfigurationManager.AppSettings["FitbitConsumerKey"];
+            //string ConsumerSecret = ConfigurationManager.AppSettings["FitbitConsumerSecret"];
+            //string ClientId = ConfigurationManager.AppSettings["FitbitClientId"];
+
+            //Authenticator2 authenticator = new Authenticator2(ClientId, ConsumerSecret, Request.Url.GetLeftPart(UriPartial.Authority) + "/Fitbit/Callback");
+
+            //string code = Request.Params["code"];
+            //OAuth2AccessToken accessToken = await authenticator.ExchangeAuthCodeForAccessTokenAsync(code);
+
+            //AccessToken tokenData = new AccessToken();
+            //tokenData.UserName = "test";
+            //tokenData.Token = accessToken.Token;
+            //tokenData.TokenType = accessToken.TokenType;
+            //tokenData.ExpiresIn = accessToken.ExpiresIn;
+            //tokenData.RefreshToken = accessToken.RefreshToken;
+
+            //await collection.InsertOneAsync(tokenData);
+
+            //Session["AccessToken"] = accessToken;
+            //System.Diagnostics.Debug.WriteLine("Access Token is: {0} and Expires in: {1} ", accessToken.Token, accessToken.ExpiresIn);
+            //return RedirectToAction("Index", "Home");   
+
+            
+
+            MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            FitBitDataService FitData = new FitBitDataService(dm);
+                     
 
             string ConsumerKey = ConfigurationManager.AppSettings["FitbitConsumerKey"];
             string ConsumerSecret = ConfigurationManager.AppSettings["FitbitConsumerSecret"];
@@ -67,18 +96,17 @@ namespace Healthycity.Controllers
             string code = Request.Params["code"];
             OAuth2AccessToken accessToken = await authenticator.ExchangeAuthCodeForAccessTokenAsync(code);
 
-            AccessToken tokenData = new AccessToken();
-            tokenData.UserName = "test";
-            tokenData.Token = accessToken.Token;
-            tokenData.TokenType = accessToken.TokenType;
-            tokenData.ExpiresIn = accessToken.ExpiresIn;
-            tokenData.RefreshToken = accessToken.RefreshToken;
-
-            await collection.InsertOneAsync(tokenData);
+            FitBitUser new_user = new FitBitUser();
+            new_user.user_name = "Obama";
+            new_user.access_token = accessToken.Token;
+            new_user.token_type = accessToken.TokenType;
+            new_user.expires_in = accessToken.ExpiresIn;
+            new_user.refresh_token = accessToken.RefreshToken;
+            await FitData.NewFitBitUser(new_user);
 
             Session["AccessToken"] = accessToken;
             System.Diagnostics.Debug.WriteLine("Access Token is: {0} and Expires in: {1} ", accessToken.Token, accessToken.ExpiresIn);
-            return RedirectToAction("Index", "Home");   
+            return RedirectToAction("Index", "Home");
         }
 
         private async Task<AccessToken> RefreshToken(string refresh_token)
