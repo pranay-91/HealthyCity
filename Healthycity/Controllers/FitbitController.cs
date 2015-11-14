@@ -165,19 +165,18 @@ namespace Healthycity.Controllers
 
         public async Task<ActionResult> GetUserProfile()
         {
-            _client = new MongoClient();
-            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            //_client = new MongoClient();
+            //_database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
 
-            var OAuth2AccessTokenCollection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
-            var collection = _database.GetCollection<UserProfile>("UserProfile");
+            MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            FitBitDataService FitData = new FitBitDataService(dm);
+            FitBitUser user = FitData.GetFitBitUserByName("Pronoy Pradhananga");
 
-            var AccessTokenDocument = await OAuth2AccessTokenCollection.Find(new BsonDocument()).FirstOrDefaultAsync();
-
-           // OAuth2AccessToken accessToken = (OAuth2AccessToken)AccessTokenDocument;
+            // OAuth2AccessToken accessToken = (OAuth2AccessToken)AccessTokenDocument;
 
             //FitbitClient client = GetFitbitClient(Acc.Token, accessToken.RefreshToken);
 
-            FitbitClient client = GetFitbitClient(AccessTokenDocument.Token, AccessTokenDocument.RefreshToken);
+            FitbitClient client = GetFitbitClient(user.access_token, user.refresh_token);
             FitbitResponse<UserProfile> response = await client.GetUserProfileAsync();
 
             //var error = response.Errors.Find(x => x.ErrorType== ErrorType.OAuth);
@@ -188,8 +187,9 @@ namespace Healthycity.Controllers
             //    var result = await collection.ReplaceOneAsync(item => item.Id == AccessTokenDocument.id, new_access_token);
             //}
 
-            await collection.InsertOneAsync(response.Data);
+            //await collection.InsertOneAsync(response.Data);
 
+            await testModifyFitbitUser();
             return View(response.Data);
         }
 
@@ -226,8 +226,11 @@ namespace Healthycity.Controllers
 
             return View(response.Data.DataSet);
         }
-        
 
+
+        public ActionResult HeartRate() {
+            return View();
+        }
 
         public async Task<FileResult> GetTCX() {
 
@@ -246,14 +249,10 @@ namespace Healthycity.Controllers
         }
 
         public async Task<ActionResult> GetHeartRateString() {
-            _client = new MongoClient();
-            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
-
-            var OAuth2AccessTokenCollection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
-
-            var AccessTokenDocument = await OAuth2AccessTokenCollection.Find(new BsonDocument()).FirstOrDefaultAsync();
-
-            FitbitClient client = GetFitbitClient(AccessTokenDocument.Token, AccessTokenDocument.RefreshToken);
+            MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            FitBitDataService FitData = new FitBitDataService(dm);
+            FitBitUser user = FitData.GetFitBitUserByName("Pronoy Pradhananga");
+            FitbitClient client = GetFitbitClient(user.access_token, user.refresh_token);
 
             string responseString = await client.GetHeartRateSeriesString(DateTime.Now, "7d");
 

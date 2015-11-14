@@ -1,0 +1,38 @@
+﻿
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>HeartRate</title>
+    <script type="text/javascript" src="~/Scripts/canvasjs.min.js"></script>
+    <script>
+        $$(document).ready(function () {
+            $('#my-table').dynatable();
+        });
+        $('#my-ajax-table').dynatable({
+            dataset: {
+                ajax: true,
+                ajaxUrl: '/Fitbit/GetHeartRateString',
+                ajaxOnLoad: true,
+                records: []
+            }
+        });
+    
+    </script>
+</head>
+<body>
+    <div> 
+
+        <table id="my-ajax-table">
+            <thead>
+            <th>Some Attribute</th>
+            <th>Some Other Attribute</th>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</body>
+</html>

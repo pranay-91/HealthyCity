@@ -135,6 +135,8 @@
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
+    <Content Include="Content\jquery.dynatable.css" />
+    <Content Include="Scripts\jquery.dynatable.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +169,8 @@
     <Content Include="Views\Fitbit\ActivityList.cshtml" />
     <Content Include="Views\Fitbit\refreshDemo.cshtml" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
+    <Content Include="Views\Home\HeartRate.cshtml" />
+    <Content Include="Views\Fitbit\HeartRate.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

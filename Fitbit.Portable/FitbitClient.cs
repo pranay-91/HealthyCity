@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Fitbit.Models;
+using Newtonsoft.Json.Linq;
 
 namespace Fitbit.Api.Portable
 {
@@ -933,6 +934,12 @@ namespace Fitbit.Api.Portable
             if (fitbitResponse.Success)
             {
                 responseBody = await response.Content.ReadAsStringAsync();
+                //var serializer = new JsonDotNetSerializer { RootProperty = "activities-heart" };
+                
+
+                //var activitiesList = JToken.Parse(responseBody)["heartRateZones"];
+                //var activityLogList = new ActivityLogList();
+                //activityLogList.DataSet = activitiesList.Children().Select(serializer.Deserialize<Activities>).ToList();
 
             }
 

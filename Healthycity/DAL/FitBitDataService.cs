@@ -56,7 +56,9 @@ namespace Healthycity.DAL
             var collection = _model.GetFitBitUserCollection();
 
             var filter = new BsonDocument("user_name", user.user_name);
-            var result = await collection.FindOneAndReplaceAsync(filter, user);
+            var updateDocument = new BsonDocument { { "user_name", user.user_name }, { "access_token", user.access_token }, { "refresh_token", user.refresh_token }, { "expires_in", user.expires_in }, { "token_type", user.token_type } };
+            var update = new BsonDocument("$set", updateDocument);
+            var result = await collection.UpdateOneAsync(filter, update);
 
             //TODO: handle excpetion case
             return 1;
