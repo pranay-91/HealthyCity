@@ -16,7 +16,18 @@ namespace Healthycity.Controllers
     {
         private static IMongoClient _client;
         private static IMongoDatabase _database;
+        //private string ConsumerKey;
+        //private string ConsumerSecret;
+        //private string ClientId;
+        //private Authenticator2 authenticator;
 
+        //FitbitController()
+        //{
+        //    ConsumerKey = ConfigurationManager.AppSettings["FitbitConsumerKey"];
+        //    ConsumerSecret = ConfigurationManager.AppSettings["FitbitConsumerSecret"];
+        //    ClientId = ConfigurationManager.AppSettings["FitbitClientId"];
+        //    Authenticator2 authenticator = new Authenticator2(ClientId, ConsumerSecret, Request.Url.GetLeftPart(UriPartial.Authority) + "/Fitbit/Callback");
+        //}
         // GET: Fitbit
         public ActionResult Index()
         {
@@ -24,14 +35,14 @@ namespace Healthycity.Controllers
         }
 
         public ActionResult Authorize()
-        {           
+        {
             string ConsumerKey = ConfigurationManager.AppSettings["FitbitConsumerKey"];
             string ConsumerSecret = ConfigurationManager.AppSettings["FitbitConsumerSecret"];
             string ClientId = ConfigurationManager.AppSettings["FitbitClientId"];
 
             Authenticator2 authenticator = new Authenticator2(ClientId, ConsumerSecret, Request.Url.GetLeftPart(UriPartial.Authority) + "/Fitbit/Callback");
 
-            
+
 
             string[] scopes = new string[] { "profile", "activity", "heartrate", "location" };
 
@@ -45,7 +56,7 @@ namespace Healthycity.Controllers
             _client = new MongoClient();
             _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
 
-            var collection = _database.GetCollection<OAuth2AccessToken>("OAuth2AccessToken");
+            var collection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
 
             string ConsumerKey = ConfigurationManager.AppSettings["FitbitConsumerKey"];
             string ConsumerSecret = ConfigurationManager.AppSettings["FitbitConsumerSecret"];
@@ -56,11 +67,48 @@ namespace Healthycity.Controllers
             string code = Request.Params["code"];
             OAuth2AccessToken accessToken = await authenticator.ExchangeAuthCodeForAccessTokenAsync(code);
 
-            await collection.InsertOneAsync(accessToken);
+            AccessToken tokenData = new AccessToken();
+            tokenData.UserName = "test";
+            tokenData.Token = accessToken.Token;
+            tokenData.TokenType = accessToken.TokenType;
+            tokenData.ExpiresIn = accessToken.ExpiresIn;
+            tokenData.RefreshToken = accessToken.RefreshToken;
+
+            await collection.InsertOneAsync(tokenData);
 
             Session["AccessToken"] = accessToken;
             System.Diagnostics.Debug.WriteLine("Access Token is: {0} and Expires in: {1} ", accessToken.Token, accessToken.ExpiresIn);
             return RedirectToAction("Index", "Home");   
+        }
+
+        private async Task<AccessToken> RefreshToken(string refresh_token)
+        {
+            string ConsumerKey = ConfigurationManager.AppSettings["FitbitConsumerKey"];
+            string ConsumerSecret = ConfigurationManager.AppSettings["FitbitConsumerSecret"];
+            string ClientId = ConfigurationManager.AppSettings["FitbitClientId"];
+            Authenticator2 authenticator = new Authenticator2(ClientId, ConsumerSecret, Request.Url.GetLeftPart(UriPartial.Authority) + "/Fitbit/Callback");
+
+            _client = new MongoClient();
+            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+
+            var collection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
+
+            OAuth2AccessToken access_token = await authenticator.RefreshAccessTokenAsync(refresh_token);
+            //TODO: update the database with the new token
+
+            AccessToken tokenData = new AccessToken();
+            tokenData.UserName = "test";
+            tokenData.Token = access_token.Token;
+            tokenData.TokenType = access_token.TokenType;
+            tokenData.ExpiresIn = access_token.ExpiresIn;
+            tokenData.RefreshToken = access_token.RefreshToken;
+
+            await collection.InsertOneAsync(tokenData);
+
+            Session["AccessToken"] = access_token;
+            System.Diagnostics.Debug.WriteLine("New Access Token is: {0} and Expires in: {1} ", access_token.Token, access_token.ExpiresIn);
+          
+            return tokenData;
         }
 
         public async Task<ActionResult> GetUserProfile()
@@ -79,6 +127,14 @@ namespace Healthycity.Controllers
 
             FitbitClient client = GetFitbitClient(AccessTokenDocument.Token, AccessTokenDocument.RefreshToken);
             FitbitResponse<UserProfile> response = await client.GetUserProfileAsync();
+
+            //var error = response.Errors.Find(x => x.ErrorType== ErrorType.OAuth);
+
+            //if (error != null)
+            //{
+            //    var new_access_token = RefreshToken(AccessTokenDocument.RefreshToken, "GetUserProfile");
+            //    var result = await collection.ReplaceOneAsync(item => item.Id == AccessTokenDocument.id, new_access_token);
+            //}
 
             await collection.InsertOneAsync(response.Data);
 
@@ -136,5 +192,48 @@ namespace Healthycity.Controllers
             HttpResponseMessage response = await client.GetActivityTCX("366076610");
             return File(response.Content.ReadAsByteArrayAsync().Result, "application/vnd.garmin.tcx+xml", "sample.tcx");
         }
+
+        public async Task<ActionResult> GetHeartRateString() {
+            _client = new MongoClient();
+            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+
+            var OAuth2AccessTokenCollection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
+
+            var AccessTokenDocument = await OAuth2AccessTokenCollection.Find(new BsonDocument()).FirstOrDefaultAsync();
+
+            FitbitClient client = GetFitbitClient(AccessTokenDocument.Token, AccessTokenDocument.RefreshToken);
+
+            string responseString = await client.GetHeartRateSeriesString(DateTime.Now, "7d");
+
+            return Content(responseString, "application/json");
+        }
+
+
+        public async Task<ActionResult> refreshDemo()
+        {
+            _client = new MongoClient();
+            _database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+
+            var OAuth2AccessTokenCollection = _database.GetCollection<AccessToken>("OAuth2AccessToken");
+            var AccessTokenDocument = await OAuth2AccessTokenCollection.Find(new BsonDocument()).FirstOrDefaultAsync();
+
+            var accessToken = RefreshToken(AccessTokenDocument.RefreshToken);
+            return View(accessToken);
+        }
     }
 }
+
+
+/*
+pass json to view for graph
+ [httpPost]
+    public JsonResult something(string userGuid)
+    {
+        var p = GetUserProducts(userGuid);
+        return Json(p, JsonRequestBehavior.AllowGet);
+    }
+    in view
+    $.post( "../something", {userGuid: "foo"}, function( data ) {
+  console.log(data)
+});
+*/

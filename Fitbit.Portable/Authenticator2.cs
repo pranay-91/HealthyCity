@@ -96,6 +96,45 @@ namespace Fitbit.Api.Portable
             return accessToken;
         }
 
+
+        public async Task<OAuth2AccessToken> RefreshAccessTokenAsync(string refresh_token) {
+            HttpClient httpClient = new HttpClient();
+
+            string postUrl = FitbitApiBaseUrl;
+            postUrl += OAuthBase;
+            postUrl += "/token";
+
+            var content = new FormUrlEncodedContent(new[] {
+                    new KeyValuePair<string, string>("grant_type", "refresh_token"),
+                    new KeyValuePair<string, string>("refresh_token", refresh_token)
+            });
+
+            string clientIdConcatSecret = Base64Encode(ClientId + ":" + AppSecret);
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", clientIdConcatSecret);
+
+            HttpResponseMessage response = await httpClient.PostAsync(postUrl, content);
+            string responseString = await response.Content.ReadAsStringAsync();
+
+            JObject responseObject = JObject.Parse(responseString);
+            var error = responseObject["error"];
+            if (error != null)
+            {
+                //TODO: Raise exception and handle the exception
+                return null;
+            }
+
+            OAuth2AccessToken accessToken = new OAuth2AccessToken();
+            var temp_access_token = responseObject["access_token"];
+            if (temp_access_token != null) accessToken.Token = temp_access_token.ToString();
+
+            var temp_expires_in = responseObject["expires_in"];
+            if (temp_expires_in != null) accessToken.ExpiresIn = Convert.ToInt32(temp_expires_in.ToString());
+
+            var temp_refresh_token = responseObject["refresh_token"];
+            if (temp_refresh_token != null) accessToken.RefreshToken = temp_refresh_token.ToString();
+
+            return accessToken;
+        }
         //http://stackoverflow.com/a/11743162
         private string Base64Encode(string plainText)
         {

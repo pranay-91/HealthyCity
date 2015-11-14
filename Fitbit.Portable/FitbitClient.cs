@@ -257,6 +257,7 @@ namespace Fitbit.Api.Portable
                 var serializer = new JsonDotNetSerializer { RootProperty = "user" };
                 fitbitResponse.Data = serializer.Deserialize<UserProfile>(responseBody);    
             }
+
             return fitbitResponse;
         }
 
@@ -916,10 +917,26 @@ namespace Fitbit.Api.Portable
                 fitbitResponse.Data = serializer.GetActivityList(responseBody);
             }
 
-            return fitbitResponse;
+            return fitbitResponse;         
+        }
 
 
-          
+        public async Task<string> GetHeartRateSeriesString (DateTime endDate, string period)
+        {
+
+            string apiCall = FitbitClientHelperExtensions.ToFullUrl("/1/user/-/activities/heart/date/{1}/{2}.json", args: new Object[] { endDate.ToFitbitFormat(), period });
+            Authorization.SetAuthorizationHeader(this.HttpClient);
+
+            HttpResponseMessage response = await HttpClient.GetAsync(apiCall);
+            var fitbitResponse = await HandleResponse<ActivityLogList>(response);
+            string responseBody = "";
+            if (fitbitResponse.Success)
+            {
+                responseBody = await response.Content.ReadAsStringAsync();
+
+            }
+
+            return responseBody;
         }
     }
 }

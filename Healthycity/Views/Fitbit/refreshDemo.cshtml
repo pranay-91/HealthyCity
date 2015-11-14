@@ -1,0 +1,66 @@
+﻿@model Healthycity.Models.AccessToken
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>refreshDemo</title>
+</head>
+<body>
+    <div>
+        <h4>AccessToken</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.UserName)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.UserName)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.Token)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.Token)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.TokenType)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.TokenType)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.ExpiresIn)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.ExpiresIn)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.RefreshToken)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.RefreshToken)
+            </dd>
+    
+        </dl>
+    </div>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+</body>
+</html>
