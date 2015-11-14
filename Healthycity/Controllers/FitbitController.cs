@@ -82,7 +82,8 @@ namespace Healthycity.Controllers
             //return RedirectToAction("Index", "Home");   
 
             
-
+            // FitBit data model to connect Mongo database
+            // Database settings stored in Webconfig--> appSettings
             MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
             FitBitDataService FitData = new FitBitDataService(dm);
                      
@@ -93,15 +94,23 @@ namespace Healthycity.Controllers
 
             Authenticator2 authenticator = new Authenticator2(ClientId, ConsumerSecret, Request.Url.GetLeftPart(UriPartial.Authority) + "/Fitbit/Callback");
 
+            //get authorisation code and exchange for access token
             string code = Request.Params["code"];
             OAuth2AccessToken accessToken = await authenticator.ExchangeAuthCodeForAccessTokenAsync(code);
 
+            //get the user name by using the access token being currently recieved
+            FitbitClient client = GetFitbitClient(accessToken.Token, accessToken.RefreshToken);
+            FitbitResponse<UserProfile> response = await client.GetUserProfileAsync();
+            
+            // Create a new user with the access token recieved and user name 
             FitBitUser new_user = new FitBitUser();
-            new_user.user_name = "Obama";
+            new_user.user_name = response.Data.FullName;
             new_user.access_token = accessToken.Token;
             new_user.token_type = accessToken.TokenType;
             new_user.expires_in = accessToken.ExpiresIn;
             new_user.refresh_token = accessToken.RefreshToken;
+
+            //add the new user to the database
             await FitData.NewFitBitUser(new_user);
 
             Session["AccessToken"] = accessToken;
