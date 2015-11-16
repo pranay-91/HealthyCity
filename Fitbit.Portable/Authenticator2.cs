@@ -133,6 +133,10 @@ namespace Fitbit.Api.Portable
             var temp_refresh_token = responseObject["refresh_token"];
             if (temp_refresh_token != null) accessToken.RefreshToken = temp_refresh_token.ToString();
 
+            var temp_token_type = responseObject["token_type"];
+            if (temp_token_type != null) accessToken.TokenType = temp_token_type.ToString();
+
+
             return accessToken;
         }
         //http://stackoverflow.com/a/11743162

@@ -7,24 +7,67 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>HeartRate</title>
-    
-    <script type="text/javascript" src="~/Scripts/jquery.dynatable.js">
-        $$(document).ready(function () {
-            $('#my-table').dynatable();
-        });
-        $('#my-ajax-table').dynatable({
-            dataset: {
-                ajax: true,
-                ajaxUrl: '/Fitbit/GetHeartRateString',
-                ajaxOnLoad: true,
-                records: []
-            }
+    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            console.log("Start of function");
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: "@(Url.RouteUrl("GetHeartRateString"))",
+
+                success: function (data) {
+                    console.log(data);
+                    var content = "";
+                    console.log("Parsing %s", data['activities-heart']);
+                    for (var i = 0; i<data['activities-heart'].length; ++i)
+                    {
+                        console.log(data['activities-heart'][i.toString]['0']['dateTime']);
+                        for (var activity in data['activites-heart'][i.toString()]) {
+                            console.log(data['activities-heart'][i.toString]);
+                            content += '<br/> DateTime: ' + activity.dateTime + '<br/> Value: <br/>';
+                            for (var j = 0; j < activity.value.heartRateZones.length; j++)
+                            {
+                                content += 'Heart Rate Zones: <br/>';
+                                for(var heartrate in activity.value.heartRateZones[j])
+                                {
+                                    content += 'Max: ' + heartrate.max + 'br/>';
+                                    content += 'Min: ' + heartrate.min + 'br/>';
+                                    content += 'Name: ' + heartrate.name + 'br/>';
+
+                                }
+
+                            }
+                        }
+                       
+                    }
+                    console.log('content is %s', content);
+                    $('#heartdata').html(content);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('Failed to retrieve .');
+                }
+            });
+
+            //$.getJSON({url:"/Fitbit/GetHeartString", 
+            
+            //    success:function (data)
+            //    {
+            //        console.log(data);
+            //        heartdata.innerHTML(data);
+            //        console.log('Json %s', data);
+            //        console.log('Im here');
+            //    }});
         });
 
+
     </script>
+    <script type="text/javascript" src="~/Scripts/canvasjs.min.js"></script>
 </head>
 <body>
     <div>
+        <div id="heartdata"></div>
 
         <table id="my-ajax-table">
             <thead>

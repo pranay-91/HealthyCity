@@ -169,7 +169,6 @@
     <Content Include="Views\Fitbit\ActivityList.cshtml" />
     <Content Include="Views\Fitbit\refreshDemo.cshtml" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
-    <Content Include="Views\Home\HeartRate.cshtml" />
     <Content Include="Views\Fitbit\HeartRate.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

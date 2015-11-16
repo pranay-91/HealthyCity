@@ -35,6 +35,7 @@ namespace Healthycity.Controllers
             return View();
         }
 
+
         public ActionResult Authorize()
         {
             string ConsumerKey = ConfigurationManager.AppSettings["FitbitConsumerKey"];
@@ -153,24 +154,33 @@ namespace Healthycity.Controllers
 
 
         // Test method for updating a user information
-        private async Task<int> testModifyFitbitUser() {
+        public async Task<int> testModifyFitbitUser() {
             MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
             FitBitDataService FitData = new FitBitDataService(dm);
             FitBitUser user = FitData.GetFitBitUserByName("Pronoy Pradhananga");
-            user.expires_in = 2000;
-
+            user.expires_in = 3600;
+            user.refresh_token = "d6e0f9e8d185534928067420392eb97d2a16be2ffce31f9f0379f3a7fddb125a";
+            user.access_token = "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NDc3MTQxMjMsInNjb3BlcyI6Indwcm8gd2xvYyB3aHIgd2FjdCIsInN1YiI6IjNNSzY5OSIsImF1ZCI6IjIyOVc4SiIsImlzcyI6IkZpdGJpdCIsInR5cCI6ImFjY2Vzc190b2tlbiIsImlhdCI6MTQ0NzcxMDUyM30.oiuanmhdqkBpvueI5NW_Dn0zZNr9u0gQZXSoToBlBxc";
+            user.token_type = "Bearer";
             await FitData.ModifyFitBitUser(user);
             return 1;
         }
 
-        public async Task<ActionResult> GetUserProfile()
+        public async Task<ActionResult> GetUserProfile(string user_name="")
         {
             //_client = new MongoClient();
             //_database = _client.GetDatabase(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
 
             MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
             FitBitDataService FitData = new FitBitDataService(dm);
-            FitBitUser user = FitData.GetFitBitUserByName("Pronoy Pradhananga");
+            FitBitUser user = new FitBitUser();
+            if (user_name.Length < 1)
+            {
+                user = FitData.GetFitBitUserByName("Pronoy Pradhananga");
+            }
+            else {
+                 user = FitData.GetFitBitUserByName(user_name);
+            }
 
             // OAuth2AccessToken accessToken = (OAuth2AccessToken)AccessTokenDocument;
 
@@ -188,8 +198,7 @@ namespace Healthycity.Controllers
             //}
 
             //await collection.InsertOneAsync(response.Data);
-
-            await testModifyFitbitUser();
+            
             return View(response.Data);
         }
 
@@ -201,14 +210,35 @@ namespace Healthycity.Controllers
         }
 
         public async Task<ActionResult> LastWeekSteps()
-        {
-            OAuth2AccessToken accessToken = (OAuth2AccessToken)Session["AccessToken"];
+        { 
+            MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            FitBitDataService FitData = new FitBitDataService(dm);
+            FitBitUser user = FitData.GetFitBitUserByName("Chris Chant");
 
-            FitbitClient client = GetFitbitClient(accessToken.Token, accessToken.RefreshToken);
+            
+
+            FitbitClient client = GetFitbitClient(user.access_token, user.refresh_token);
 
             FitbitResponse<TimeSeriesDataListInt> response = await client.GetTimeSeriesIntAsync(TimeSeriesResourceType.Steps, DateTime.UtcNow.AddDays(-7), DateTime.UtcNow);
 
             return View(response.Data);
+
+        }
+
+
+        public async Task<ActionResult> LastWeekStepString()
+        {
+            MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            FitBitDataService FitData = new FitBitDataService(dm);
+            FitBitUser user = FitData.GetFitBitUserByName("Chris Chant");
+
+
+
+            FitbitClient client = GetFitbitClient(user.access_token, user.refresh_token);
+
+            string response = await client.GetTimeSeriesString(TimeSeriesResourceType.Steps, DateTime.UtcNow.AddDays(-21), DateTime.UtcNow, null);
+
+            return Content(response, "application/json");
 
         }
 
@@ -225,6 +255,20 @@ namespace Healthycity.Controllers
             FitbitResponse<ActivityLogList> response = await client.GetActivityListAsync(activity_date);
 
             return View(response.Data.DataSet);
+        }
+
+        
+        public async Task<ActionResult> getActivityListString()
+        {
+            DateTime activity_date = new DateTime(2015, 10, 14);
+            MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            FitBitDataService FitData = new FitBitDataService(dm);
+            FitBitUser user = FitData.GetFitBitUserByName("Chris Chant");
+
+            FitbitClient client = GetFitbitClient(user.access_token, user.refresh_token);
+            string response = await client.GetActivityListString(activity_date);
+
+            return Content(response, "application/json");
         }
 
 
@@ -256,7 +300,7 @@ namespace Healthycity.Controllers
 
             string responseString = await client.GetHeartRateSeriesString(DateTime.Now, "7d");
 
-            return Content(responseString, "application/json");
+                return Content(responseString, "application/json");
         }
 
 
@@ -272,17 +316,3 @@ namespace Healthycity.Controllers
     }
 }
 
-
-/*
-pass json to view for graph
- [httpPost]
-    public JsonResult something(string userGuid)
-    {
-        var p = GetUserProducts(userGuid);
-        return Json(p, JsonRequestBehavior.AllowGet);
-    }
-    in view
-    $.post( "../something", {userGuid: "foo"}, function( data ) {
-  console.log(data)
-});
-*/

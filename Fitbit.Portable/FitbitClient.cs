@@ -362,8 +362,32 @@ namespace Fitbit.Api.Portable
                 fitbitResponse.Data = serializer.GetTimeSeriesDataListInt(responseBody);
             }
             return fitbitResponse;
+           
         }
 
+
+        public async Task<string> GetTimeSeriesString(TimeSeriesResourceType timeSeriesResourceType, DateTime baseDate,DateTime endDate, string encodedUserId)
+        {
+            string endDateOrPeriod = endDate.ToFitbitFormat();
+            var apiCall = FitbitClientHelperExtensions.ToFullUrl("/1/user/{0}{1}/date/{2}/{3}.json", encodedUserId, timeSeriesResourceType.GetStringValue(), baseDate.ToFitbitFormat(), endDateOrPeriod);
+
+            Authorization.SetAuthorizationHeader(this.HttpClient);
+
+            HttpResponseMessage response = await HttpClient.GetAsync(apiCall);
+            var fitbitResponse = await HandleResponse<TimeSeriesDataListInt>(response);
+            string responseBody = "";
+            if (fitbitResponse.Success)
+            {
+                responseBody = await response.Content.ReadAsStringAsync();
+                var serializer = new JsonDotNetSerializer { RootProperty = timeSeriesResourceType.ToTimeSeriesProperty() };
+                fitbitResponse.Data = serializer.GetTimeSeriesDataListInt(responseBody);
+            }
+
+
+            return responseBody;
+
+
+        }
         public async Task<FitbitResponse<IntradayData>> GetIntraDayTimeSeriesAsync(IntradayResourceType timeSeriesResourceType, DateTime dayAndStartTime, TimeSpan intraDayTimeSpan)
         {
 
@@ -852,10 +876,6 @@ namespace Fitbit.Api.Portable
             HttpResponseMessage response = await HttpClient.GetAsync(apiCall);
 
             string responseString = await response.Content.ReadAsStringAsync();
-
-
-
-
         
            // HttpResponseMessage response = await HttpClient.GetAsync(apiCall);
 
@@ -919,6 +939,29 @@ namespace Fitbit.Api.Portable
             }
 
             return fitbitResponse;         
+        }
+        public async Task<string> GetActivityListString(DateTime date)
+        {
+
+            //string apiCall = FitbitClientHelperExtensions.ToFullUrl("/1/user/-/activities/list.json?offset=2&limit=2&ort=desc&beforeDate={1}.json", args: date.ToFitbitFormat());
+
+            //string apiCall = FitbitClientHelperExtensions.ToFullUrl("/1/user/-/activities/date/{1}.json", args: date.ToFitbitFormat());
+
+            string apiCall = FitbitClientHelperExtensions.ToFullUrl("/1/user/-/activities/date/{1}.json", args: date.ToFitbitFormat());
+            Authorization.SetAuthorizationHeader(this.HttpClient);
+
+            HttpResponseMessage response = await HttpClient.GetAsync(apiCall);
+            var fitbitResponse = await HandleResponse<ActivityLogList>(response);
+            var responseBody = "";
+            if (fitbitResponse.Success)
+            {
+                responseBody = await response.Content.ReadAsStringAsync();
+
+               // var serializer = new JsonDotNetSerializer { RootProperty = null };
+                //fitbitResponse.Data = serializer.GetActivityList(responseBody);
+            }
+
+            return responseBody;
         }
 
 
