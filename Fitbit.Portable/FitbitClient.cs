@@ -782,6 +782,21 @@ namespace Fitbit.Api.Portable
             return fitbitResponse;
         }
 
+        public async Task<string> GetSubscriptionString()
+        {
+            string apiCall = FitbitClientHelperExtensions.ToFullUrl("/1/user/-/apiSubscriptions.json");
+            Authorization.SetAuthorizationHeader(this.HttpClient);
+            HttpResponseMessage response = await HttpClient.GetAsync(apiCall);
+            var fitbitResponse = await HandleResponse<List<ApiSubscription>>(response);
+            string responseBody = "";
+            if (fitbitResponse.Success)
+            {
+                responseBody = await response.Content.ReadAsStringAsync();
+
+            }
+            return responseBody;
+        }
+
         /// <summary>
         /// Add subscription
         /// </summary>
@@ -810,6 +825,36 @@ namespace Fitbit.Api.Portable
                 fitbitResponse.Data = serializer.Deserialize<ApiSubscription>(responseBody);
             }
             return fitbitResponse;
+        }
+
+        public async Task<string> AddSubscriptionString(APICollectionType apiCollectionType, string uniqueSubscriptionId, string subscriberId = default(string))
+        {
+            string path = "";
+            string resource = "";
+            if (apiCollectionType != APICollectionType.all)
+            {
+                path = FormatKey(apiCollectionType, Constants.Formatting.TrailingSlash);
+                //resource = FormatKey(apiCollectionType, Constants.Formatting.LeadingDash);
+            }
+            
+
+            string url = "/1/user/-/{1}apiSubscriptions/{3}{2}.json";
+            string apiCall = FitbitClientHelperExtensions.ToFullUrl(url, args: new object[] { path, resource, uniqueSubscriptionId });
+            if (!string.IsNullOrWhiteSpace(subscriberId))
+            {
+             //   HttpClient.DefaultRequestHeaders.Add(Constants.Headers.XFitbitSubscriberId, subscriberId);
+            }
+            Authorization.SetAuthorizationHeader(this.HttpClient);
+
+            HttpResponseMessage response = await HttpClient.PostAsync(apiCall, new StringContent(string.Empty));
+            var fitbitResponse = await HandleResponse<ApiSubscription>(response);
+            string responseBody="";
+            if (fitbitResponse.Success)
+            {
+               responseBody = await response.Content.ReadAsStringAsync();
+               
+            }
+            return responseBody;
         }
 
         private string FormatKey(APICollectionType apiCollectionType, string format)

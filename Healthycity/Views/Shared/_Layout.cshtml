@@ -1,14 +1,22 @@
-﻿
+﻿@using System.Web.Optimization
 <!DOCTYPE html>
 
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>_Layout</title>
- 
+    <title>Healthy City - @ViewBag.Title </title>
+    @Styles.Render("~/styles")
 </head>
 <body>
-    <div> 
-    </div>
+        <div class="container body-content">
+            <div class="jumbotron">
+                <p class="clear:both">
+                    <h1> Healthy City</h1>
+                </p>
+            </div>
+            @RenderBody()
+        </div> 
+    @Scripts.Render("~/Scripts/js")
+    @RenderSection("Scripts", false)
 </body>
 </html>

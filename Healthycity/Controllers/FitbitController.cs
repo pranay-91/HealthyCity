@@ -191,13 +191,7 @@ namespace Healthycity.Controllers
 
             //var error = response.Errors.Find(x => x.ErrorType== ErrorType.OAuth);
 
-            //if (error != null)
-            //{
-            //    var new_access_token = RefreshToken(AccessTokenDocument.RefreshToken, "GetUserProfile");
-            //    var result = await collection.ReplaceOneAsync(item => item.Id == AccessTokenDocument.id, new_access_token);
-            //}
-
-            //await collection.InsertOneAsync(response.Data);
+     
             
             return View(response.Data);
         }
@@ -312,6 +306,37 @@ namespace Healthycity.Controllers
 
             var accessToken =  await RefreshToken(user.refresh_token, user.user_name);
             return View(accessToken);
+        }
+
+        public async Task<ActionResult> addSubscription()
+        {
+            APICollectionType scopes = APICollectionType.activities;
+            string response = "";
+
+            MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            FitBitDataService FitData = new FitBitDataService(dm);
+            FitBitUser user = FitData.GetFitBitUserByName("Pronoy Pradhananga");
+            FitbitClient client = GetFitbitClient(user.access_token, user.refresh_token);
+
+
+            response = await client.AddSubscriptionString(scopes, "1");
+
+            return Content(response, "application/json");
+
+            
+        }
+
+        public async Task<ActionResult> getSubscriptionList()
+        {
+            MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
+            FitBitDataService FitData = new FitBitDataService(dm);
+            FitBitUser user = FitData.GetFitBitUserByName("Pronoy Pradhananga");
+            FitbitClient client = GetFitbitClient(user.access_token, user.refresh_token);
+
+            string response = "";
+            response = await client.GetSubscriptionString();
+
+            return Content(response, "application/json");
         }
     }
 }

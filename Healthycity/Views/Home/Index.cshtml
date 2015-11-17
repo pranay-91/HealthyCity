@@ -1,49 +1,9 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-    <script type="text/javascript">
+﻿@{ 
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+        
+<h3>Welcome to Healthy City.</h3><br/>
+<h4>Please follow the link to subsribe our services.</h4>
 
-
-        window.onload = function () {
-            
-             
-            var datapoints = []
-           
-            for (var x = 0; x < 10; ++x)
-            {
-                datapoints.push({x: x+10, y: x+11})
-            }
-            console.log(datapoints[3]);
-            var chart = new CanvasJS.Chart("chartContainer",
-            {
-                title: {
-                    text: "Monthly Downloads"
-                },
-                data: [
-              {
-                  type: "area",
-                  dataPoints:datapoints
-              }]    
-            }
-
-                );
-                
-            chart.render();
-            console.log(chart);
-          
-  }
-    </script>
-    <script type="text/javascript" src="~/Scripts/canvasjs.min.js"></script>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-    <div> 
-        <h1>Welcome</h1>
-    </div>
-    <div id="chartContainer" style="height: 300px; width: 100%;"/>
-</body>
-</html>
-
-
-
+ 
