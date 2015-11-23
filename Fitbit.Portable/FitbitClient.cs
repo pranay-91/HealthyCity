@@ -792,7 +792,6 @@ namespace Fitbit.Api.Portable
             if (fitbitResponse.Success)
             {
                 responseBody = await response.Content.ReadAsStringAsync();
-
             }
             return responseBody;
         }
@@ -837,7 +836,6 @@ namespace Fitbit.Api.Portable
                 //resource = FormatKey(apiCollectionType, Constants.Formatting.LeadingDash);
             }
             
-
             string url = "/1/user/-/{1}apiSubscriptions/{3}{2}.json";
             string apiCall = FitbitClientHelperExtensions.ToFullUrl(url, args: new object[] { path, resource, uniqueSubscriptionId });
             if (!string.IsNullOrWhiteSpace(subscriberId))

@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Healthycity.ViewModels.FitbitUserViewModel>
+
+@{
+    ViewBag.Title = "viewUsers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Subscribed Users</h2>
+
+<table class="table">
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.user_name)
+        </td>
+        <td>
+          
+            @Html.ActionLink("Details", "GetUserProfile", new {user_name = item.user_name /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Heart Rate", "GetHeartRateString", new { user_name = item.user_name /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Last Weeks Step", "LastWeekStepString", new { user_name = item.user_name /* id=item.PrimaryKey */ })
+            
+        </td>
+    </tr>
+}
+
+</table>
