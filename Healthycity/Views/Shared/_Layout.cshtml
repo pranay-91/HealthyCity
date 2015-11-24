@@ -13,7 +13,12 @@
                 <p class="clear:both">
                     <h1> Healthy City</h1>
                 </p>
-                @Html.ActionLink("View current Subscribers", "viewUsers") 
+             
+                <ul>
+                    <li>@Html.RouteLink("View current Subscribers", new { controller = "Fitbit", action = "viewUsers" })</li>
+                    <li>@Html.RouteLink("Add new Subscriber", new { controller = "Fitbit", action = "Index" })</li>
+                </ul>
+                
             </div>
 
             @RenderBody()

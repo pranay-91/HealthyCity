@@ -18,8 +18,8 @@
           
             @Html.ActionLink("Details", "GetUserProfile", new {user_name = item.user_name /* id=item.PrimaryKey */ }) |
             @Html.ActionLink("Heart Rate", "GetHeartRateString", new { user_name = item.user_name /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Last Weeks Step", "LastWeekStepString", new { user_name = item.user_name /* id=item.PrimaryKey */ })
-            
+            @Html.ActionLink("Last Weeks Step", "LastWeekStepString", new { user_name = item.user_name /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Activites List", "getActivityListString", new { user_name = item.user_name /* id=item.PrimaryKey */ })
         </td>
     </tr>
 }

@@ -199,20 +199,30 @@ namespace Healthycity.Controllers
             FitbitResponse<ActivityLogList> response = await client.GetActivityListAsync(activity_date);
 
             return View(response.Data.DataSet);
+
+
         }
 
         
-        public async Task<ActionResult> getActivityListString()
+        public async Task<ActionResult> getActivityListString(string user_name= "Pranay Pradhananga")
         {
             DateTime activity_date = new DateTime(2015, 10, 14);
             MongoDataModel dm = new MongoDataModel(ConfigurationManager.AppSettings["MongoDefaultDatabase"].ToString());
             FitBitDataService FitData = new FitBitDataService(dm);
-            FitBitUser user = FitData.GetFitBitUserByName("Chris Chant");
+            FitBitUser user = FitData.GetFitBitUserByName(user_name);
+            string responseString = "";
 
-            FitbitClient client = GetFitbitClient(user.access_token, user.refresh_token);
-            string response = await client.GetActivityListString(activity_date);
-
-            return Content(response, "application/json");
+            Boolean flag = true;
+            while (flag) {
+                FitbitClient client = GetFitbitClient(user.access_token, user.refresh_token);
+                responseString = await client.GetActivityListString(activity_date);
+                if (responseString.Length > 1)
+                    flag = false;
+                else
+                    user = await RefreshToken(user.refresh_token, user_name);
+            }
+            
+            return Content(responseString, "application/json");
         }
 
 
