@@ -194,6 +194,7 @@
     <Content Include="Views\Fitbit\viewUsers.cshtml" />
     <Content Include="Views\Fitbit\Index.cshtml" />
     <Content Include="Views\Fitbit\Callback.cshtml" />
+    <Content Include="Views\Fitbit\Subscribe.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

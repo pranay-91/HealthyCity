@@ -27,6 +27,12 @@ namespace Healthycity.Controllers
         }
 
 
+        public ActionResult Subscribe()
+        {
+            return View();
+        }
+
+
         public ActionResult Authorize()
         {
             FitbitContext fitContext = new FitbitContext();

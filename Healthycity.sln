@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Healthycity", "Healthycity\Healthycity.csproj", "{D8ACA610-6709-43C8-B295-1BA7E256EEE2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{37636456-5640-4258-ADF5-11292E6B422E} = {37636456-5640-4258-ADF5-11292E6B422E}
+		{1358D3B4-0698-4003-97EB-B6D489E04138} = {1358D3B4-0698-4003-97EB-B6D489E04138}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fitbit.Common", "Fitbit.Common\Fitbit.Common.csproj", "{37636456-5640-4258-ADF5-11292E6B422E}"
 EndProject

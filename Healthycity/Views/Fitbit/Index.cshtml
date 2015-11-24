@@ -4,7 +4,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h4>Please follow this @Html.ActionLink("link", "Authorize") to subsribe our services.</h4>
+<ul>
+    <li>@Html.RouteLink("View current Subscribers", new { controller = "Fitbit", action = "viewUsers" })</li>
+    <li>@Html.RouteLink("Add new Subscriber", new { controller = "Fitbit", action = "Subscribe" })</li>
+</ul>
 
 
 
